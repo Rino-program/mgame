@@ -251,10 +251,6 @@ class RhythmEngine {
       const delta = adjustedInputTimeMs - note.judgeTimeMs;
       const absDelta = Math.abs(delta);
 
-      if (delta < -maxWindow && absDelta > bestAbsDelta) {
-        break;
-      }
-
       if (absDelta < bestAbsDelta) {
         bestAbsDelta = absDelta;
         bestNote = note;
@@ -355,7 +351,9 @@ class RhythmEngine {
 
     const visibleNotes = [];
     for (let lane = 0; lane < this.notesByLane.length; lane += 1) {
-      for (const note of this.notesByLane[lane].notes) {
+      const laneState = this.notesByLane[lane];
+      for (let i = laneState.nextIndex; i < laneState.notes.length; i += 1) {
+        const note = laneState.notes[i];
         const state = this.noteStateById.get(note.id);
         if (state.judged) {
           continue;
@@ -367,7 +365,7 @@ class RhythmEngine {
         }
 
         if (deltaToHitMs > this.visualLeadMs) {
-          continue;
+          break;
         }
 
         visibleNotes.push({
@@ -463,6 +461,15 @@ function createDebugClickChart({
 } = {}) {
   if (typeof durationMs === "number" && durationMs < 0) {
     throw new Error("durationMs must be non-negative");
+  }
+  if (!Number.isInteger(lanes) || lanes <= 0) {
+    throw new Error("lanes must be a positive integer");
+  }
+  if (
+    laneMode === "fixed" &&
+    (!Number.isInteger(fixedLane) || fixedLane < 0 || fixedLane >= lanes)
+  ) {
+    throw new Error("fixedLane must be within lane bounds");
   }
   const beatMs = 60_000 / bpm;
   const notes = [];

@@ -159,6 +159,17 @@ test('debug click chart aligns 500ms interval at 120 BPM', () => {
   assert.ok(chart.notes[chart.notes.length - 1].timeMs < 2600);
 });
 
+test('debug click chart validates fixedLane bounds', () => {
+  assert.throws(
+    () => createDebugClickChart({ laneMode: 'fixed', fixedLane: -1, lanes: 6 }),
+    /fixedLane must be within lane bounds/,
+  );
+  assert.throws(
+    () => createDebugClickChart({ laneMode: 'fixed', fixedLane: 6, lanes: 6 }),
+    /fixedLane must be within lane bounds/,
+  );
+});
+
 test('keyboard mapper suppresses repeat and emits escape', () => {
   const laneEvents = [];
   let escaped = false;
