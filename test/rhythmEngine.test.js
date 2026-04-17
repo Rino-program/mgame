@@ -151,7 +151,7 @@ test('same input sequence produces identical score state', () => {
 });
 
 test('debug click chart aligns 500ms interval at 120 BPM', () => {
-  const chart = createDebugClickChart({ bpm: 120, durationMs: 2600, startTimeMs: 1000, lanes: 6 });
+  const chart = createDebugClickChart({ bpm: 120, endTimeMs: 2600, startTimeMs: 1000, lanes: 6 });
   assert.equal(chart.notes[0].timeMs, 1000);
   assert.equal(chart.notes[1].timeMs - chart.notes[0].timeMs, 500);
   assert.equal(chart.notes[2].timeMs, 2000);

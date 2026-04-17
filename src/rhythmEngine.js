@@ -463,7 +463,8 @@ function createDebugClickChart({
 } = {}) {
   const beatMs = 60_000 / bpm;
   const notes = [];
-  const lastTimeMs = typeof endTimeMs === "number" ? endTimeMs : durationMs;
+  const lastTimeMs =
+    typeof endTimeMs === "number" ? endTimeMs : startTimeMs + Math.max(0, durationMs);
 
   let id = 1;
   for (let timeMs = startTimeMs; timeMs <= lastTimeMs; timeMs += beatMs) {
