@@ -4,6 +4,9 @@
   "private": true,
   "description": "Core rhythm engine",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "web:install": "npm ci --prefix v0",
+    "web:dev": "npm run dev --prefix v0",
+    "web:build": "npm run build --prefix v0"
   }
 }

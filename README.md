@@ -2,12 +2,38 @@
 
 落下式音ゲー向けのコアエンジン実装です。
 
-## 起動方法
+## 起動方法（Engineテスト）
 
 このリポジトリはエンジン実装中心のため、まずテストで動作確認します。
 
 ```bash
 npm test
+```
+
+## v0 UI 統合版の起動
+
+`v0` 配下に Next.js ベースの UI があり、`v0/v0/engine/core/rhythmEngine.js` を統合層経由で接続しています。
+
+```bash
+npm run web:install
+npm run web:dev
+```
+
+ブラウザで `http://localhost:3000` を開くと、
+「曲選択 -> プレイ -> 終了」の一連フローを確認できます。
+
+## GitHub Pages デプロイ
+
+`main` ブランチへの push で GitHub Pages に自動デプロイされます。
+
+- ワークフロー: [.github/workflows/jekyll-gh-pages.yml](.github/workflows/jekyll-gh-pages.yml)
+- ビルド方式: Next.js static export (`v0/out`)
+- 公開URL: `https://<GitHubユーザー名>.github.io/mgame/`
+
+ローカルで公開用ビルドを確認する場合:
+
+```bash
+npm run web:build
 ```
 
 ## エンジンAPI
@@ -54,6 +80,20 @@ npm test
   - `timingStats`（mean / median / stddev / min / max）
   - 直近サンプル
   - `recommendedGlobalOffsetMs`
+
+UI 側では `Timing Debug Click` を選択すると以下を表示します。
+
+- `Now Offset`
+- `Avg(20)`
+- `Suggest Offset`
+
+ESC キーは安全終了フローとして扱われ、エンジン停止後に曲選択へ戻ります。
+
+## 既知の制約
+
+- 音源デコード・再生は未接続（統合ログのみ実装）
+- ロングノーツ判定は未実装（描画型は予約済み）
+- 判定と描画の時間軸は `performance.now()` 基準
 
 ## 将来拡張
 
