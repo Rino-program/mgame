@@ -162,6 +162,7 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
           flashLanes={flashLanes}
           showKeyGuide={settings.keyGuide}
           keyLabels={keyLabels}
+          displayOffsetMs={settings.displayOffsetMs}
           onLanePress={handleLanePress}
           onLaneRelease={handleLaneRelease}
           judgeLineRef={judgeLineRef}

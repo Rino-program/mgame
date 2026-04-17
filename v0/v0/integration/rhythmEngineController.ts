@@ -72,6 +72,7 @@ const { RhythmEngine, createDebugClickChart } = rhythmEngineModule as {
 
 export interface ControllerFrame {
   renderNotes: NoteRenderState
+  visualLeadMs: number
   hud: {
     score: number
     combo: number
@@ -180,6 +181,7 @@ function buildChart(song: SongMeta, laneCount: number) {
 export class RhythmEngineController {
   private readonly engine: RhythmEngineLike
   private readonly song: SongMeta
+  private readonly settings: GameSettings
   private readonly timeBridge: TimeBridge
   private lastJudgeLane?: number
   private lastJudgeText?: JudgementType
@@ -187,6 +189,7 @@ export class RhythmEngineController {
 
   constructor(song: SongMeta, settings: GameSettings) {
     this.song = song
+    this.settings = settings
     this.timeBridge = createTimeBridge()
     const visualLeadMs = computeVisualLeadMs(settings.noteSpeed)
 
@@ -194,6 +197,7 @@ export class RhythmEngineController {
       nowProvider: this.timeBridge.nowMs,
       debugEnabled: Boolean(song.isDebug),
       visualLeadMs,
+      globalOffsetMs: settings.timingOffsetMs,
     })
 
     console.log('[integration] song load start', { songId: song.id })
@@ -251,17 +255,20 @@ export class RhythmEngineController {
     const debug = this.engine.getDebugState()
     const beatMs = (60 / this.song.bpm) * 1000
 
+    const displayOffsetPercent = (this.settings.displayOffsetMs / render.visualLeadMs) * 85
+
     const renderNotes: NoteRenderState = {
       notes: render.visibleNotes.map((note) => ({
         id: String(note.id),
         laneIndex: note.lane,
         type: note.type === 'hold' ? 'long' : 'normal',
-        yPercent: clamp(((render.visualLeadMs - note.deltaToHitMs) / render.visualLeadMs) * 85, 0, 88),
+        yPercent: clamp(((render.visualLeadMs - note.deltaToHitMs) / render.visualLeadMs) * 85 - displayOffsetPercent, 0, 88),
       })),
     }
 
     const frame: ControllerFrame = {
       renderNotes,
+      visualLeadMs: render.visualLeadMs,
       hud: {
         score: score.score,
         combo: score.combo,

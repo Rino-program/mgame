@@ -113,6 +113,60 @@ export default function SettingsModal({ open, settings, onChange, onClose }: Set
           ))}
         </div>
 
+        {/* Timing Offset */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-mono text-muted-foreground tracking-widest uppercase">
+            判定タイミング調整 ({settings.timingOffsetMs > 0 ? '+' : ''}{settings.timingOffsetMs}ms)
+          </label>
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={-500}
+              max={500}
+              step={1}
+              value={settings.timingOffsetMs}
+              onChange={(e) => update('timingOffsetMs', Number(e.target.value))}
+              className="flex-1 accent-primary"
+              style={{ accentColor: '#7C6CFF' }}
+            />
+            <span className="font-mono text-primary font-bold w-10 text-right">
+              {settings.timingOffsetMs > 0 ? '+' : ''}
+              {settings.timingOffsetMs}
+            </span>
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground font-mono">
+            <span>-500ms (早)→判定ウィンドウが先行</span>
+            <span>+500ms (遅)→判定ウィンドウが遅延</span>
+          </div>
+        </div>
+
+        {/* Display Offset */}
+        <div className="flex flex-col gap-2">
+          <label className="text-xs font-mono text-muted-foreground tracking-widest uppercase">
+            表示タイミング調整 ({settings.displayOffsetMs > 0 ? '+' : ''}{settings.displayOffsetMs}ms)
+          </label>
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={-100}
+              max={100}
+              step={1}
+              value={settings.displayOffsetMs}
+              onChange={(e) => update('displayOffsetMs', Number(e.target.value))}
+              className="flex-1 accent-primary"
+              style={{ accentColor: '#FFA500' }}
+            />
+            <span className="font-mono text-primary font-bold w-10 text-right">
+              {settings.displayOffsetMs > 0 ? '+' : ''}
+              {settings.displayOffsetMs}
+            </span>
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground font-mono">
+            <span>-100ms (遅く表示)→ノーツが下から</span>
+            <span>+100ms (早く表示)→ノーツが上から</span>
+          </div>
+        </div>
+
         {/* Footer */}
         <button
           onClick={onClose}

@@ -77,6 +77,8 @@ export const DEFAULT_SETTINGS = {
   laneHitEffect: true,
   screenShake: false,
   keyGuide: true,
+  timingOffsetMs: 0,
+  displayOffsetMs: 0,
 }
 
 export const LANE_KEYS = ['S', 'D', 'F', 'J', 'K', 'L'] as const

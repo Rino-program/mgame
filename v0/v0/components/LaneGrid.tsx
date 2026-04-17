@@ -11,6 +11,7 @@ interface LaneGridProps {
   flashLanes: number[]
   showKeyGuide: boolean
   keyLabels: string[]
+  displayOffsetMs?: number
   onLanePress: (laneIndex: number) => void
   onLaneRelease: (laneIndex: number) => void
   judgeLineRef?: React.RefObject<HTMLDivElement | null>
@@ -23,6 +24,7 @@ export default function LaneGrid({
   flashLanes,
   showKeyGuide,
   keyLabels,
+  displayOffsetMs = 0,
   onLanePress,
   onLaneRelease,
   judgeLineRef,
