@@ -48,6 +48,7 @@ npm test
 `createDebugClickChart` で 120BPM の 500ms 間隔ノーツ譜面を生成できます。
 
 - クリック理想時刻と判定時刻を一致させるための譜面生成
+- `durationMs` は譜面の最終時刻（絶対ms）として扱われます（`endTimeMs` でも指定可能）
 - `debugEnabled: true` のとき `getDebugState()` で次を取得
   - `timingStats`（mean / median / stddev / min / max）
   - 直近サンプル
