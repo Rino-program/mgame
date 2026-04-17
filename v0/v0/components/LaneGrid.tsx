@@ -29,7 +29,7 @@ export default function LaneGrid({
 }: LaneGridProps) {
   return (
     <div
-      className="flex-1 relative flex overflow-hidden"
+      className="w-full h-full relative flex overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, rgba(13,20,36,0.95) 0%, rgba(9,14,28,0.98) 100%)',
       }}
