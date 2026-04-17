@@ -49,7 +49,7 @@ npm test
 
 - クリック理想時刻と判定時刻を一致させるための譜面生成
 - `durationMs` は `startTimeMs` からの長さ（ms）です
-- 絶対時刻で指定したい場合は `endTimeMs` を使用できます
+- 絶対時刻で指定したい場合は `endTimeMs` を使用できます（`endTimeMs` 未満まで生成）
 - `debugEnabled: true` のとき `getDebugState()` で次を取得
   - `timingStats`（mean / median / stddev / min / max）
   - 直近サンプル
