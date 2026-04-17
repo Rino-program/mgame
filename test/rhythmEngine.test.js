@@ -156,6 +156,7 @@ test('debug click chart aligns 500ms interval at 120 BPM', () => {
   assert.equal(chart.notes[1].timeMs - chart.notes[0].timeMs, 500);
   assert.equal(chart.notes[2].timeMs, 2000);
   assert.equal(chart.notes[3].timeMs, 2500);
+  assert.ok(chart.notes[chart.notes.length - 1].timeMs <= 2600);
 });
 
 test('keyboard mapper suppresses repeat and emits escape', () => {

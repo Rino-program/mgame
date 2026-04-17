@@ -461,13 +461,16 @@ function createDebugClickChart({
   laneMode = "roundRobin",
   fixedLane = 0,
 } = {}) {
+  if (typeof durationMs === "number" && durationMs < 0) {
+    throw new Error("durationMs must be non-negative");
+  }
   const beatMs = 60_000 / bpm;
   const notes = [];
   const lastTimeMs =
-    typeof endTimeMs === "number" ? endTimeMs : startTimeMs + Math.max(0, durationMs);
+    typeof endTimeMs === "number" ? endTimeMs : startTimeMs + durationMs;
 
   let id = 1;
-  for (let timeMs = startTimeMs; timeMs <= lastTimeMs; timeMs += beatMs) {
+  for (let timeMs = startTimeMs; timeMs < lastTimeMs; timeMs += beatMs) {
     const lane = laneMode === "fixed" ? fixedLane : (id - 1) % lanes;
     notes.push({ id, lane, timeMs: Math.round(timeMs), type: "tap" });
     id += 1;
