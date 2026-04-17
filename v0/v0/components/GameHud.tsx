@@ -45,7 +45,7 @@ export default function GameHud({
   const { judgements } = scoreState
 
   return (
-    <div className="flex-shrink-0 w-full z-20" style={{ background: '#0B1020' }}>
+    <div className="flex-shrink-0 w-full z-20 border-b border-border/80" style={{ background: '#0B1020CC', backdropFilter: 'blur(8px)' }}>
       {/* Progress bar */}
       <div className="h-0.5 w-full bg-secondary">
         <div
@@ -59,11 +59,11 @@ export default function GameHud({
       </div>
 
       {/* Main HUD row */}
-      <div className="flex items-center gap-2 px-3 py-2">
+      <div className="flex items-center gap-2 px-3 py-2 sm:px-4">
         {/* Pause button */}
         <button
           onClick={onPause}
-          className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-primary transition-colors"
+          className="flex-shrink-0 p-1.5 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
           aria-label="Pause"
         >
           <Pause size={16} />
@@ -77,7 +77,7 @@ export default function GameHud({
                 DEBUG
               </span>
             )}
-            <span className="text-xs font-bold truncate text-foreground">{songTitle}</span>
+            <span className="text-xs sm:text-sm font-bold truncate text-foreground">{songTitle}</span>
           </div>
           <div className="flex items-center gap-1 mt-0.5">
             <span className="font-mono text-xs text-primary">{formatTime(elapsedMs)}</span>
@@ -90,7 +90,7 @@ export default function GameHud({
         <div className="flex-shrink-0 text-right">
           <p className="text-xs text-muted-foreground font-mono">SCORE</p>
           <p
-            className="font-mono font-black text-lg tabular-nums leading-tight text-glow-cyan"
+            className="font-mono font-black text-base sm:text-lg tabular-nums leading-tight text-glow-cyan"
             style={{ color: '#42E8E0', letterSpacing: '0.05em' }}
           >
             {formatScore(scoreState.score)}
@@ -101,7 +101,7 @@ export default function GameHud({
         <div className="flex-shrink-0 text-right min-w-12">
           <p className="text-xs text-muted-foreground font-mono">COMBO</p>
           <p
-            className="font-mono font-black text-lg tabular-nums leading-tight"
+            className="font-mono font-black text-base sm:text-lg tabular-nums leading-tight"
             style={{
               color: comboState.combo > 0 ? '#7C6CFF' : '#3A4A6A',
               textShadow: comboState.combo > 0 ? '0 0 8px #7C6CFF' : 'none',
@@ -113,22 +113,18 @@ export default function GameHud({
       </div>
 
       {/* Judgement breakdown */}
-      <div className="flex items-center justify-center gap-3 px-3 pb-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 px-3 pb-2 sm:gap-2">
         {(Object.keys(JUDGE_COLORS) as JudgementType[]).map((type) => (
-          <div key={type} className="flex items-center gap-1">
-            <span className="text-xs font-mono font-bold" style={{ color: JUDGE_COLORS[type] }}>
-              {type.slice(0, 1)}
+          <div key={type} className="flex items-center gap-1 rounded-md border border-border bg-[#0B1020] px-1.5 py-0.5">
+            <span className="text-[10px] font-mono font-bold" style={{ color: JUDGE_COLORS[type] }}>
+              {type}
             </span>
-            <span className="font-mono text-xs tabular-nums text-foreground">
+            <span className="font-mono text-[10px] tabular-nums text-foreground">
               {judgements[type] ?? 0}
             </span>
           </div>
         ))}
-      </div>
-
-      {/* ESC guide */}
-      <div className="absolute top-3 right-3 text-xs font-mono text-muted-foreground opacity-60">
-        ESC: EXIT
+        <span className="ml-2 hidden text-[10px] font-mono text-muted-foreground sm:inline">ESC: EXIT</span>
       </div>
     </div>
   )

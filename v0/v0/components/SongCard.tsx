@@ -26,14 +26,14 @@ export default function SongCard({ song, selected, onClick }: SongCardProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left rounded-xl border transition-all duration-150 focus:outline-none"
+      className="w-full text-left rounded-xl border transition-all duration-200 focus:outline-none"
       style={{
-        background: selected ? `rgba(${hexToRgb(song.coverColor)}, 0.08)` : '#111828',
-        borderColor: selected ? song.coverColor : '#1D2A44',
+        background: selected ? `linear-gradient(120deg, rgba(${hexToRgb(song.coverColor)}, 0.16), rgba(17,24,40,0.95))` : '#111828',
+        borderColor: selected ? song.coverColor : '#233050',
         boxShadow: selected
-          ? `0 0 0 1px ${song.coverColor}, 0 0 20px rgba(${hexToRgb(song.coverColor)}, 0.2)`
-          : 'none',
-        transform: selected ? 'scale(1.02)' : 'scale(1)',
+          ? `0 0 0 1px ${song.coverColor}, 0 12px 28px rgba(${hexToRgb(song.coverColor)}, 0.24)`
+          : '0 6px 16px rgba(0,0,0,0.18)',
+        transform: selected ? 'translateY(-1px)' : 'translateY(0)',
       }}
     >
       <div className="flex items-stretch gap-4 p-4">
@@ -126,7 +126,7 @@ export default function SongCard({ song, selected, onClick }: SongCardProps) {
         {/* High score */}
         {!song.isDebug && (
           <div className="flex-shrink-0 flex flex-col items-end justify-end">
-            <span className="text-xs text-muted-foreground font-mono">BEST</span>
+            <span className="text-[10px] tracking-widest text-muted-foreground font-mono">BEST</span>
             <span
               className="font-mono text-sm font-bold tabular-nums"
               style={{ color: song.highScore && song.highScore > 0 ? '#E8EEFF' : '#3A4A6A' }}

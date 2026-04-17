@@ -127,7 +127,7 @@ function buildChart(song: SongMeta, laneCount: number) {
       songId: song.id,
       bpm: song.bpm,
       lanes: laneCount,
-      startTimeMs: 1000,
+      startTimeMs: 1500,
       endTimeMs: song.duration * 1000,
       laneMode: 'fixed',
       fixedLane: Math.floor(laneCount / 2),
@@ -142,7 +142,20 @@ function buildChart(song: SongMeta, laneCount: number) {
 
   let id = 1
   const notes: Array<{ id: number; lane: number; timeMs: number; type: 'tap' }> = []
-  for (let beat = 4; beat <= endBeat; beat += 1) {
+
+  // Ensure the opening is not empty so players can confirm notes are rendering.
+  const openingBeats = Math.min(8, endBeat)
+  for (let beat = 1; beat <= openingBeats; beat += 1) {
+    notes.push({
+      id,
+      lane: Math.floor(random() * laneCount),
+      timeMs: Math.round(beat * beatMs),
+      type: 'tap',
+    })
+    id += 1
+  }
+
+  for (let beat = 2; beat <= endBeat; beat += 1) {
     for (const sub of subdivisions) {
       if (random() > density) continue
       notes.push({

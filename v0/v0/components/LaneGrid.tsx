@@ -30,7 +30,9 @@ export default function LaneGrid({
   return (
     <div
       className="flex-1 relative flex overflow-hidden"
-      style={{ background: '#0B1020' }}
+      style={{
+        background: 'linear-gradient(180deg, rgba(13,20,36,0.95) 0%, rgba(9,14,28,0.98) 100%)',
+      }}
     >
       {/* Scanline overlay */}
       <div
@@ -53,6 +55,7 @@ export default function LaneGrid({
             className="relative flex-1 flex flex-col overflow-hidden"
             style={{
               borderRight: i < laneCount - 1 ? `1px solid #1D2A44` : 'none',
+              background: `linear-gradient(180deg, rgba(${hexToRgb(laneColor)}, 0.02), rgba(0,0,0,0))`,
               boxShadow: isCenter
                 ? 'inset 0 0 20px rgba(255,255,255,0.02)'
                 : 'none',
@@ -156,4 +159,11 @@ export default function LaneGrid({
       )}
     </div>
   )
+}
+
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : '66, 232, 224'
 }

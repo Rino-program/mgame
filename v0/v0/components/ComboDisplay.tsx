@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from 'react'
 interface ComboDisplayProps {
   combo: number
   milestone?: number
+  top?: string
 }
 
-export default function ComboDisplay({ combo, milestone }: ComboDisplayProps) {
+export default function ComboDisplay({ combo, milestone, top = '25%' }: ComboDisplayProps) {
   const [animate, setAnimate] = useState(false)
   const prevCombo = useRef(combo)
 
@@ -30,7 +31,7 @@ export default function ComboDisplay({ combo, milestone }: ComboDisplayProps) {
   return (
     <div
       className="absolute left-1/2 -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
-      style={{ top: '25%' }}
+      style={{ top }}
     >
       <span
         className={`font-mono font-black tabular-nums leading-none ${size}`}

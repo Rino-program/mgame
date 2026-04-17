@@ -125,8 +125,20 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
   return (
     <div
       className="flex flex-col h-screen w-screen overflow-hidden relative select-none"
-      style={{ background: '#0B1020' }}
+      style={{
+        background:
+          'radial-gradient(70% 50% at 50% -20%, rgba(66,232,224,0.14), transparent 70%), radial-gradient(50% 40% at 100% 100%, rgba(255,95,162,0.12), transparent 75%), #0B1020',
+      }}
     >
+      <div
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+        }}
+      />
+
       {/* HUD */}
       <GameHud
         songTitle={song.title}
@@ -142,7 +154,7 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
       />
 
       {/* Lane area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden px-1 sm:px-2">
         <LaneGrid
           laneCount={settings.laneCount}
           noteRenderState={noteRenderState}
@@ -156,7 +168,11 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
         />
 
         {/* Combo display (centered, in lane area) */}
-        <ComboDisplay combo={comboState.combo} milestone={comboState.milestone} />
+        <ComboDisplay
+          combo={comboState.combo}
+          milestone={comboState.milestone}
+          top={song.isDebug ? '34%' : '25%'}
+        />
 
         {/* Debug badge */}
         {song.isDebug && (

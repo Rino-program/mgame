@@ -79,8 +79,8 @@ export const DEFAULT_SETTINGS = {
   keyGuide: true,
 }
 
-export const LANE_KEYS = ['D', 'F', 'Space', 'J', 'K', 'L'] as const
-export const LANE_KEYCODES = ['KeyD', 'KeyF', 'Space', 'KeyJ', 'KeyK', 'KeyL'] as const
+export const LANE_KEYS = ['S', 'D', 'F', 'J', 'K', 'L'] as const
+export const LANE_KEYCODES = ['KeyS', 'KeyD', 'KeyF', 'KeyJ', 'KeyK', 'KeyL'] as const
 
 export const LANE_COLORS = [
   '#42E8E0', // cyan
