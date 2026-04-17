@@ -12,7 +12,7 @@ npm test
 
 ## エンジンAPI
 
-`/home/runner/work/mgame/mgame/src/rhythmEngine.js` の `RhythmEngine` は以下を提供します。
+`src/rhythmEngine.js` の `RhythmEngine` は以下を提供します。
 
 - `loadChart(chart)`
 - `loadAudio(buffer)`
