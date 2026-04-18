@@ -39,19 +39,19 @@ test('judge windows boundary classification', () => {
 
   engine.start(0);
 
-  clock.set(2030);
+  clock.set(2040);
   let result = engine.onInput({ lane: 0, timestampMs: clock.now(), source: 'keyboard' });
   assert.equal(result.result, 'perfect');
 
-  clock.set(3060);
+  clock.set(3080);
   result = engine.onInput({ lane: 0, timestampMs: clock.now(), source: 'keyboard' });
   assert.equal(result.result, 'great');
 
-  clock.set(4090);
+  clock.set(4110);
   result = engine.onInput({ lane: 0, timestampMs: clock.now(), source: 'keyboard' });
   assert.equal(result.result, 'good');
 
-  clock.set(5130);
+  clock.set(5160);
   result = engine.onInput({ lane: 0, timestampMs: clock.now(), source: 'keyboard' });
   assert.equal(result.result, 'bad');
 });
@@ -69,12 +69,36 @@ test('misses are auto-applied after bad window passes', () => {
   });
 
   engine.start(0);
-  clock.set(1131);
+  clock.set(1161);
   engine.getRenderState(clock.now());
 
   const score = engine.getScoreState();
   assert.equal(score.counts.miss, 1);
   assert.equal(score.combo, 0);
+});
+
+test('missed note stays visible briefly after judgement point', () => {
+  const clock = createClock(0);
+  const engine = new RhythmEngine({ nowProvider: clock.now, visualLeadMs: 1200 });
+
+  engine.loadChart({
+    songId: 'miss-visible',
+    bpm: 120,
+    offsetMs: 0,
+    lanes: 6,
+    notes: [{ id: 1, lane: 0, timeMs: 1000, type: 'tap' }],
+  });
+
+  engine.start(0);
+
+  clock.set(1161);
+  const afterMiss = engine.getRenderState(clock.now());
+  assert.equal(engine.getScoreState().counts.miss, 1);
+  assert.equal(afterMiss.visibleNotes.length, 1);
+
+  clock.set(1400);
+  const afterTail = engine.getRenderState(clock.now());
+  assert.equal(afterTail.visibleNotes.length, 0);
 });
 
 test('lane independence and closest-note selection', () => {

@@ -45,7 +45,7 @@ export default function GameHud({
   const { judgements } = scoreState
 
   return (
-    <div className="flex-shrink-0 w-full z-20 border-b border-border/80" style={{ background: '#0B1020CC', backdropFilter: 'blur(8px)' }}>
+    <div className="flex-shrink-0 w-full z-20 border-b border-border/80" style={{ background: 'transparent' }}>
       {/* Progress bar */}
       <div className="h-0.5 w-full bg-secondary">
         <div

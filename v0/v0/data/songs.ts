@@ -77,6 +77,7 @@ export const DEFAULT_SETTINGS = {
   laneHitEffect: true,
   screenShake: false,
   keyGuide: true,
+  showTouchInputBar: true,
   timingOffsetMs: 0,
   displayOffsetMs: 0,
 }

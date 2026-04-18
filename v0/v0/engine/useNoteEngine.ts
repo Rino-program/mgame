@@ -81,26 +81,29 @@ export function useNoteEngine(
     return audioContextRef.current
   }, [])
 
-  const playDebugClick = useCallback(async () => {
+  const playDebugClickAt = useCallback(async (scheduledTimeSec?: number) => {
     const audioContext = await ensureAudioContext()
     if (!audioContext) return
 
     const now = audioContext.currentTime
+    const startAt = typeof scheduledTimeSec === 'number'
+      ? Math.max(scheduledTimeSec, now + 0.003)
+      : now
     const osc = audioContext.createOscillator()
     const gain = audioContext.createGain()
 
     osc.type = 'square'
-    osc.frequency.setValueAtTime(1600, now)
-    osc.frequency.exponentialRampToValueAtTime(1100, now + 0.015)
+    osc.frequency.setValueAtTime(1600, startAt)
+    osc.frequency.exponentialRampToValueAtTime(1100, startAt + 0.015)
 
-    gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.08, now + 0.004)
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05)
+    gain.gain.setValueAtTime(0.0001, startAt)
+    gain.gain.exponentialRampToValueAtTime(0.08, startAt + 0.004)
+    gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.05)
 
     osc.connect(gain)
     gain.connect(audioContext.destination)
-    osc.start(now)
-    osc.stop(now + 0.06)
+    osc.start(startAt)
+    osc.stop(startAt + 0.06)
   }, [ensureAudioContext])
 
   // Reset on song change
@@ -168,6 +171,7 @@ export function useNoteEngine(
 
       if (song.isDebug && running) {
         const beatMs = 60000 / Math.max(song.bpm, 1)
+        const lookAheadMs = 120
 
         if (nextDebugClickAtMsRef.current === null) {
           nextDebugClickAtMsRef.current = 1500
@@ -176,10 +180,14 @@ export function useNoteEngine(
         let safety = 0
         while (
           nextDebugClickAtMsRef.current !== null
-          && frame.hud.elapsedMs >= nextDebugClickAtMsRef.current
-          && safety < 4
+          && nextDebugClickAtMsRef.current <= frame.hud.elapsedMs + lookAheadMs
+          && safety < 8
         ) {
-          void playDebugClick()
+          const deltaMs = nextDebugClickAtMsRef.current - frame.hud.elapsedMs
+          const scheduledTimeSec = audioContextRef.current
+            ? audioContextRef.current.currentTime + Math.max(deltaMs, 0) / 1000
+            : undefined
+          void playDebugClickAt(scheduledTimeSec)
           nextDebugClickAtMsRef.current += beatMs
           safety += 1
         }
@@ -207,7 +215,12 @@ export function useNoteEngine(
 
     rafRef.current = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [song, running, settings.showJudgement, playDebugClick])
+  }, [song, running, settings.showJudgement, playDebugClickAt])
+
+  useEffect(() => {
+    if (!controllerRef.current) return
+    controllerRef.current.updateSettings(settings)
+  }, [settings])
 
   useEffect(() => {
     if (!controllerRef.current) return

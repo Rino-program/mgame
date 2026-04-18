@@ -1,8 +1,8 @@
 const DEFAULT_JUDGE_WINDOWS_MS = {
-  perfect: 30,
-  great: 60,
-  good: 90,
-  bad: 130,
+  perfect: 40,
+  great: 80,
+  good: 110,
+  bad: 160,
 };
 
 const DEFAULT_SCORE_VALUES = {
@@ -348,24 +348,32 @@ class RhythmEngine {
     this.processMisses(audioTimeMs);
 
     const visualTimeMs = audioTimeMs + this.visualLeadMs;
+    const postJudgeVisibleMs = Math.max(
+      this.judgeWindowsMs.bad + 40,
+      Math.round(this.visualLeadMs * 0.28),
+    );
 
     const visibleNotes = [];
     for (let lane = 0; lane < this.notesByLane.length; lane += 1) {
       const laneState = this.notesByLane[lane];
-      for (let i = laneState.nextIndex; i < laneState.notes.length; i += 1) {
+      const startIndex = Math.max(0, laneState.nextIndex - 12);
+
+      for (let i = startIndex; i < laneState.notes.length; i += 1) {
         const note = laneState.notes[i];
         const state = this.noteStateById.get(note.id);
-        if (state.judged) {
-          continue;
-        }
+        const deltaToHitMs = note.judgeTimeMs - audioTimeMs;
 
-        const deltaToHitMs = note.judgeTimeMs - visualTimeMs;
-        if (deltaToHitMs < -this.judgeWindowsMs.bad) {
+        if (deltaToHitMs < -postJudgeVisibleMs) {
           continue;
         }
 
         if (deltaToHitMs > this.visualLeadMs) {
           break;
+        }
+
+        // Keep missed notes visible briefly so they can pass below the judgement line.
+        if (state.judged && state.result !== "miss") {
+          continue;
         }
 
         visibleNotes.push({

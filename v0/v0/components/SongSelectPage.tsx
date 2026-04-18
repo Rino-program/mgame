@@ -2,19 +2,26 @@
 
 import { useState } from 'react'
 import { Play, Settings } from 'lucide-react'
-import { SONGS, DEFAULT_SETTINGS } from '../data/songs'
+import { SONGS } from '../data/songs'
 import type { GameSettings, SongMeta } from '../types/game'
 import SongCard from './SongCard'
 import SettingsModal from './SettingsModal'
 
 interface SongSelectPageProps {
-  onStartSong: (song: SongMeta, settings: GameSettings) => void
+  settings: GameSettings
+  settingsReady: boolean
+  onSettingsChange: (settings: GameSettings) => void
+  onStartSong: (song: SongMeta) => void
 }
 
-export default function SongSelectPage({ onStartSong }: SongSelectPageProps) {
+export default function SongSelectPage({
+  settings,
+  settingsReady,
+  onSettingsChange,
+  onStartSong,
+}: SongSelectPageProps) {
   const [selectedId, setSelectedId] = useState<string>(SONGS[0].id)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS)
 
   const selectedSong = SONGS.find((s) => s.id === selectedId)!
   const regularSongs = SONGS.filter((song) => !song.isDebug)
@@ -146,12 +153,15 @@ export default function SongSelectPage({ onStartSong }: SongSelectPageProps) {
 
               <div className="mt-5">
                 <button
-                  onClick={() => onStartSong(selectedSong, settings)}
+                  onClick={() => onStartSong(selectedSong)}
+                  disabled={!settingsReady}
                   className="w-full rounded-xl px-8 py-3 font-mono text-sm font-black uppercase tracking-[0.2em] transition-all duration-150 active:scale-[0.98]"
                   style={{
                     background: 'linear-gradient(90deg, #42E8E0 0%, #56f3c4 100%)',
                     color: '#081223',
                     boxShadow: '0 0 20px rgba(66,232,224,0.45)',
+                    opacity: settingsReady ? 1 : 0.6,
+                    cursor: settingsReady ? 'pointer' : 'wait',
                   }}
                 >
                   <span className="inline-flex items-center gap-2">
@@ -162,6 +172,11 @@ export default function SongSelectPage({ onStartSong }: SongSelectPageProps) {
                 <p className="mt-2 text-center text-[11px] font-mono text-muted-foreground">
                   Keyboard: S D F J K L / Touch input supported
                 </p>
+                {!settingsReady && (
+                  <p className="mt-1 text-center text-[10px] font-mono text-amber-300">
+                    設定を読み込み中...
+                  </p>
+                )}
               </div>
             </aside>
           </div>
@@ -171,7 +186,7 @@ export default function SongSelectPage({ onStartSong }: SongSelectPageProps) {
       <SettingsModal
         open={settingsOpen}
         settings={settings}
-        onChange={setSettings}
+        onChange={onSettingsChange}
         onClose={() => setSettingsOpen(false)}
       />
     </div>

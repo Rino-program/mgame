@@ -82,7 +82,7 @@ export default function HitEffectLayer({ laneCount, judgementPopups }: HitEffect
             style={{
               left: `${centerX}%`,
               bottom: judgeLineBottom,
-              transform: 'translate(-50%, 50%)',
+              transform: 'translate(-50%, -50%)',
             }}
           >
             <div

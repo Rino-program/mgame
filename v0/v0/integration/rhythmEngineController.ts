@@ -44,7 +44,11 @@ interface RhythmEngineLike {
     timingStats: { mean: number }
     recommendedGlobalOffsetMs: number
   }
-  setTimingOptions: (options: { visualLeadMs?: number }) => void
+  setTimingOptions: (options: {
+    visualLeadMs?: number
+    globalOffsetMs?: number
+    inputLatencyCompMs?: number
+  }) => void
 }
 
 const { RhythmEngine, createDebugClickChart } = rhythmEngineModule as {
@@ -52,6 +56,7 @@ const { RhythmEngine, createDebugClickChart } = rhythmEngineModule as {
     nowProvider: () => number
     debugEnabled: boolean
     visualLeadMs: number
+    globalOffsetMs?: number
   }) => RhythmEngineLike
   createDebugClickChart: (options: {
     songId: string
@@ -181,7 +186,7 @@ function buildChart(song: SongMeta, laneCount: number) {
 export class RhythmEngineController {
   private readonly engine: RhythmEngineLike
   private readonly song: SongMeta
-  private readonly settings: GameSettings
+  private settings: GameSettings
   private readonly timeBridge: TimeBridge
   private lastJudgeLane?: number
   private lastJudgeText?: JudgementType
@@ -189,15 +194,15 @@ export class RhythmEngineController {
 
   constructor(song: SongMeta, settings: GameSettings) {
     this.song = song
-    this.settings = settings
+    this.settings = { ...settings }
     this.timeBridge = createTimeBridge()
-    const visualLeadMs = computeVisualLeadMs(settings.noteSpeed)
+    const visualLeadMs = computeVisualLeadMs(this.settings.noteSpeed)
 
     this.engine = new RhythmEngine({
       nowProvider: this.timeBridge.nowMs,
       debugEnabled: Boolean(song.isDebug),
       visualLeadMs,
-      globalOffsetMs: settings.timingOffsetMs,
+      globalOffsetMs: this.settings.timingOffsetMs,
     })
 
     console.log('[integration] song load start', { songId: song.id })
@@ -208,6 +213,14 @@ export class RhythmEngineController {
     console.log('[integration] audio decode start', { songId: song.id })
     this.engine.loadAudio(null)
     console.log('[integration] audio decode complete', { songId: song.id })
+  }
+
+  updateSettings(settings: GameSettings): void {
+    this.settings = { ...settings }
+    this.engine.setTimingOptions({
+      visualLeadMs: computeVisualLeadMs(this.settings.noteSpeed),
+      globalOffsetMs: this.settings.timingOffsetMs,
+    })
   }
 
   start(): void {
@@ -262,7 +275,7 @@ export class RhythmEngineController {
         id: String(note.id),
         laneIndex: note.lane,
         type: note.type === 'hold' ? 'long' : 'normal',
-        yPercent: clamp(((render.visualLeadMs - note.deltaToHitMs) / render.visualLeadMs) * 85 - displayOffsetPercent, 0, 88),
+        yPercent: clamp(((render.visualLeadMs - note.deltaToHitMs) / render.visualLeadMs) * 85 - displayOffsetPercent, 0, 100),
       })),
     }
 

@@ -23,6 +23,7 @@ interface PlayPageProps {
 export default function PlayPage({ song, settings, onExit, onRetry }: PlayPageProps) {
   const [paused, setPaused] = useState(false)
   const [ended, setEnded] = useState(false)
+  const [showTouchInputBar, setShowTouchInputBar] = useState(settings.showTouchInputBar)
   const [pressedLanes, setPressedLanes] = useState<boolean[]>(Array(settings.laneCount).fill(false))
   const judgeLineRef = useRef<HTMLDivElement>(null)
 
@@ -44,6 +45,11 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
   } = engineState
 
   const totalMs = song.isDebug ? 999999 : song.duration * 1000
+  const laneViewportWidthPx = Math.max(settings.laneCount, 1) * 88
+
+  useEffect(() => {
+    setShowTouchInputBar(settings.showTouchInputBar)
+  }, [settings.showTouchInputBar])
 
   // End detection
   useEffect(() => {
@@ -155,100 +161,122 @@ export default function PlayPage({ song, settings, onExit, onRetry }: PlayPagePr
 
       {/* Lane area */}
       <div className="flex-1 relative overflow-hidden px-1 sm:px-2">
-        <LaneGrid
-          laneCount={settings.laneCount}
-          noteRenderState={noteRenderState}
-          pressedLanes={pressedLanes}
-          flashLanes={flashLanes}
-          showKeyGuide={settings.keyGuide}
-          keyLabels={keyLabels}
-          displayOffsetMs={settings.displayOffsetMs}
-          onLanePress={handleLanePress}
-          onLaneRelease={handleLaneRelease}
-          judgeLineRef={judgeLineRef}
-        />
-
-        {/* Combo display (centered, in lane area) */}
-        <ComboDisplay
-          combo={comboState.combo}
-          milestone={comboState.milestone}
-          top={song.isDebug ? '34%' : '25%'}
-        />
-
-        {/* Debug badge */}
-        {song.isDebug && (
-          <DebugBadge
-            bpm={song.bpm}
-            countdownPct={debugCountdownPct}
-            timingOffsetMs={timingOffsetMs}
-            rollingMeanMs={rollingMeanMs}
-            suggestedOffsetMs={suggestedOffsetMs}
+        <div
+          className="mx-auto h-full relative"
+          style={{ width: `min(100vw, ${laneViewportWidthPx}px)` }}
+        >
+          <LaneGrid
+            laneCount={settings.laneCount}
+            noteRenderState={noteRenderState}
+            pressedLanes={pressedLanes}
+            flashLanes={flashLanes}
+            showKeyGuide={settings.keyGuide}
+            keyLabels={keyLabels}
+            displayOffsetMs={settings.displayOffsetMs}
+            onLanePress={handleLanePress}
+            onLaneRelease={handleLaneRelease}
+            judgeLineRef={judgeLineRef}
           />
-        )}
 
-        {/* Hit effect layer */}
-        <HitEffectLayer
-          laneCount={settings.laneCount}
-          judgementPopups={judgementPopups}
-        />
-
-        {/* Pause overlay */}
-        {paused && !ended && (
-          <PauseOverlay
-            songTitle={song.title}
-            onResume={() => {
-              engineControls.onResume()
-              setPaused(false)
-            }}
-            onExit={() => exitToMenu('pause-overlay-exit')}
+          {/* Combo display (centered, in lane area) */}
+          <ComboDisplay
+            combo={comboState.combo}
+            milestone={comboState.milestone}
+            top={song.isDebug ? '34%' : '25%'}
           />
-        )}
 
-        {/* Result modal */}
-        {ended && (
-          <ResultModal
-            songTitle={song.title}
-            scoreState={scoreState}
-            comboState={comboState}
-            isNewRecord={(scoreState.score > (song.highScore ?? 0))}
-            onRetry={onRetry}
-            onExit={() => exitToMenu('result-exit')}
+          {/* Debug badge */}
+          {song.isDebug && (
+            <DebugBadge
+              bpm={song.bpm}
+              countdownPct={debugCountdownPct}
+              timingOffsetMs={timingOffsetMs}
+              rollingMeanMs={rollingMeanMs}
+              suggestedOffsetMs={suggestedOffsetMs}
+            />
+          )}
+
+          {/* Hit effect layer */}
+          <HitEffectLayer
+            laneCount={settings.laneCount}
+            judgementPopups={judgementPopups}
           />
-        )}
 
-        {loadError && (
-          <div
-            className="absolute inset-0 z-[60] flex items-center justify-center px-4"
-            style={{ background: 'rgba(11,16,32,0.96)' }}
-          >
+          {/* Pause overlay */}
+          {paused && !ended && (
+            <PauseOverlay
+              songTitle={song.title}
+              onResume={() => {
+                engineControls.onResume()
+                setPaused(false)
+              }}
+              onExit={() => exitToMenu('pause-overlay-exit')}
+            />
+          )}
+
+          {/* Result modal */}
+          {ended && (
+            <ResultModal
+              songTitle={song.title}
+              scoreState={scoreState}
+              comboState={comboState}
+              isNewRecord={(scoreState.score > (song.highScore ?? 0))}
+              onRetry={onRetry}
+              onExit={() => exitToMenu('result-exit')}
+            />
+          )}
+
+          {loadError && (
             <div
-              className="w-full max-w-sm rounded-xl border p-5"
-              style={{ background: '#111828', borderColor: '#FF5FA2' }}
+              className="absolute inset-0 z-[60] flex items-center justify-center px-4"
+              style={{ background: 'rgba(11,16,32,0.96)' }}
             >
-              <p className="font-mono text-xs tracking-widest mb-2" style={{ color: '#FF5FA2' }}>
-                LOAD FAILED
-              </p>
-              <p className="text-sm text-foreground mb-4">{loadError}</p>
-              <button
-                onClick={() => exitToMenu('load-failed')}
-                className="w-full py-2 rounded-lg font-mono font-bold text-xs tracking-widest uppercase"
-                style={{ background: '#42E8E0', color: '#0B1020' }}
+              <div
+                className="w-full max-w-sm rounded-xl border p-5"
+                style={{ background: '#111828', borderColor: '#FF5FA2' }}
               >
-                BACK TO SELECT
-              </button>
+                <p className="font-mono text-xs tracking-widest mb-2" style={{ color: '#FF5FA2' }}>
+                  LOAD FAILED
+                </p>
+                <p className="text-sm text-foreground mb-4">{loadError}</p>
+                <button
+                  onClick={() => exitToMenu('load-failed')}
+                  className="w-full py-2 rounded-lg font-mono font-bold text-xs tracking-widest uppercase"
+                  style={{ background: '#42E8E0', color: '#0B1020' }}
+                >
+                  BACK TO SELECT
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowTouchInputBar((prev) => !prev)}
+          className="absolute right-3 z-[45] px-3 py-1.5 rounded-md border font-mono text-[10px] tracking-widest uppercase"
+          style={{
+            bottom: showTouchInputBar ? '92px' : '10px',
+            borderColor: '#1D2A44',
+            color: '#42E8E0',
+            background: 'rgba(11,16,32,0.72)',
+          }}
+        >
+          {showTouchInputBar ? '下部を隠す' : '下部を表示'}
+        </button>
       </div>
 
       {/* Touch input bar */}
-      <TouchInputBar
-        laneCount={settings.laneCount}
-        pressedLanes={pressedLanes}
-        keyLabels={keyLabels}
-        onLanePress={handleLanePress}
-        onLaneRelease={handleLaneRelease}
-      />
+      {showTouchInputBar && (
+        <TouchInputBar
+          laneCount={settings.laneCount}
+          laneViewportWidthPx={laneViewportWidthPx}
+          pressedLanes={pressedLanes}
+          keyLabels={keyLabels}
+          onLanePress={handleLanePress}
+          onLaneRelease={handleLaneRelease}
+        />
+      )}
     </div>
   )
 }

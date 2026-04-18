@@ -63,6 +63,7 @@ export interface GameSettings {
   laneHitEffect: boolean
   screenShake: boolean
   keyGuide: boolean
+  showTouchInputBar: boolean
   timingOffsetMs: number // -500 to +500 (affects judgment timing)
   displayOffsetMs: number // -100 to +100 (affects visual position only)
 }

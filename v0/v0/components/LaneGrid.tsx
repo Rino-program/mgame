@@ -86,6 +86,7 @@ export default function LaneGrid({
                     className="absolute left-1 right-1 z-30"
                     style={{
                       top,
+                      transform: note.type === 'normal' ? 'translateY(-50%)' : undefined,
                       height: note.type === 'long' && note.longHeightPercent
                         ? `${note.longHeightPercent}%`
                         : '12px',
